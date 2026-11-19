@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+images:
+  - name: lab-app
+    newName: gabriel.duarte/XMwE7v8I/lab-app
+    newTag: v1

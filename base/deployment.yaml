@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lab-app
+  labels:
+    app: lab-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lab-app
+  template:
+    metadata:
+      labels:
+        app: lab-app
+    spec:
+      containers:
+        - name: lab-app
+          image: lab-app:v1
+          ports:
+            - containerPort: 8080
+              protocol: TCP

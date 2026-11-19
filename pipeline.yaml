@@ -1,0 +1,52 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: app-pipeline
+spec:
+  description: Clona o repositório da aplicação, constrói a imagem e publica no registry.
+  params:
+    - name: git-url
+      type: string
+    - name: image
+      type: string
+  workspaces:
+    - name: source
+  results:
+    - name: image-digest
+      description: Digest da imagem publicada
+      value: $(tasks.build.results.IMAGE_DIGEST)
+  tasks:
+    - name: clone
+      taskRef:
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: git-clone
+          - name: namespace
+            value: openshift-pipelines
+      params:
+        - name: url
+          value: $(params.git-url)
+      workspaces:
+        - name: output
+          workspace: source
+    - name: build
+      runAfter:
+        - clone
+      taskRef:
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: buildah
+          - name: namespace
+            value: openshift-pipelines
+      params:
+        - name: IMAGE
+          value: $(params.image)
+      workspaces:
+        - name: source
+          workspace: source
